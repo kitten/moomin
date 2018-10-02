@@ -1,6 +1,10 @@
-open Moomin_types;
 open Moomin_react_types;
 open Moomin_react;
+
+type reprocessingLoopT('state) = {
+  setup: Reprocessing.glEnvT => 'state,
+  draw: ('state, Reprocessing.glEnvT) => 'state
+};
 
 let render = (root: elementT): reprocessingLoopT(recNodeT) => {
   let rec unmount = (recNode: recNodeT) => {
