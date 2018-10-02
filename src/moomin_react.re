@@ -1,8 +1,19 @@
 open Moomin_react_types;
 
-let makeSelf = (glEnv: Reprocessing.glEnvT, state: 'a) => {
+let makeSelf = (
+  ~glEnv: Reprocessing.glEnvT,
+  ~state: 'state,
+  ~actions: Belt.MutableQueue.t('action)
+) => {
+  send: (action: 'action) => Belt.MutableQueue.add(actions, action),
   state: state,
-  glEnv: glEnv
+  glEnv: glEnv,
+};
+
+let makeInternal = (name: string): internalT('state, 'action) => {
+  name,
+  states: StateMap.make(),
+  actions: StateMap.make()
 };
 
 let getElementKey = (element: elementT, index: int) =>
@@ -20,18 +31,29 @@ let getPop = (map: stateMapT('a), key: string, default: 'a) =>
   | None => default
   };
 
+let rec updateState = (reducer, actions, state) =>
+  switch (Belt.MutableQueue.pop(actions)) {
+  | Some(action) =>
+    updateState(reducer, actions, reducer(action, state))
+  | None => state
+  };
+
 module ReasonReact = {
   let null: elementT = {
     name: "null",
     key: None,
     initialState: (~path as _path, ~glEnv as _glEnv) => (),
+    willReceiveProps: (~path as _path, ~glEnv as _glEnv) => (),
+    willRender: (~path as _path, ~glEnv as _glEnv) => (),
     render: (~path as _path, ~glEnv as _glEnv) => C_NULL,
-    unmount: (~path as _path) => ()
+    didRender: (~path as _path, ~glEnv as _glEnv) => (),
+    willUnmount: (~path as _path) => ()
   };
 
   let element = (~key=?, component): elementT => {
     let name = component.internal.name;
     let states = component.internal.states;
+    let actions = component.internal.actions;
 
     {
       name,
@@ -39,26 +61,62 @@ module ReasonReact = {
       initialState: (~path, ~glEnv) => {
         let state = component.initialState(glEnv);
         StateMap.set(states, path, state);
+        StateMap.set(actions, path, Belt.MutableQueue.make());
+      },
+      willReceiveProps: (~path, ~glEnv) => {
+        let state = StateMap.getExn(states, path);
+        let actions = StateMap.getExn(actions, path);
+        let self = makeSelf(~glEnv, ~state, ~actions);
+        let state = component.willReceiveProps(self);
+        StateMap.set(states, path, state);
+      },
+      willRender: (~path, ~glEnv) => {
+        let state = StateMap.getExn(states, path);
+        let actions = StateMap.getExn(actions, path);
+        let state = updateState(component.reducer, actions, state);
+        StateMap.set(states, path, state);
+        let self = makeSelf(~glEnv, ~state, ~actions);
+        component.willRender(self);
       },
       render: (~path, ~glEnv): childrenT => {
         let state = StateMap.getExn(states, path);
-        let element = component.render(makeSelf(glEnv, state));
+        let actions = StateMap.getExn(actions, path);
+        let self = makeSelf(~glEnv, ~state, ~actions);
+        let element = component.render(self);
         C_SINGLE(element)
       },
-      unmount: (~path) => {
+      didRender: (~path, ~glEnv) => {
+        let state = StateMap.getExn(states, path);
+        let actions = StateMap.getExn(actions, path);
+        let self = makeSelf(~glEnv, ~state, ~actions);
+        component.didRender(self);
+      },
+      willUnmount: (~path) => {
         StateMap.remove(states, path);
+        StateMap.remove(actions, path);
       }
     }
   };
 
   let fragment = "moomin%fragment";
 
-  let statelessComponent = (componentName: string): componentT('state) => {
-    internal: {
-      name: componentName,
-      states: StateMap.make()
-    },
-    initialState: _glEnv => (),
-    render: _self => null
+  let statelessComponent = (componentName: string): componentSpecT(unit, unit, unit) => {
+    internal: makeInternal(componentName),
+    initialState: (_glEnv: Reprocessing.glEnvT): 'initState => (),
+    willReceiveProps: (self: selfT('state, 'action)): 'state => self.state,
+    willRender: (_self: selfT('state, 'action)) => (),
+    render: (_self: selfT('state, 'action)) => null,
+    didRender: (_self: selfT('state, 'action)) => (),
+    reducer: (_action: 'action, state: 'state): 'state => state
+  };
+
+  let reducerComponent = (componentName: string): componentSpecT('state, 'action, 'initState) => {
+    internal: makeInternal(componentName),
+    initialState: (_glEnv: Reprocessing.glEnvT): 'initState => (),
+    willReceiveProps: (self: selfT('state, 'action)): 'state => self.state,
+    willRender: (_self: selfT('state, 'action)) => (),
+    render: (_self: selfT('state, 'action)) => null,
+    didRender: (_self: selfT('state, 'action)) => (),
+    reducer: (_action: 'action, state: 'state): 'state => state
   };
 };

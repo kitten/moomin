@@ -1,17 +1,31 @@
 open Moomin;
 
 module TestB = {
-  let component = ReasonReact.statelessComponent("TestB");
+  type state = {
+    x: float,
+    y: float
+  };
+
+  let component = ReasonReact.reducerComponent("TestB");
 
   let make = (~x, ~y, _children) => {
     ...component,
-    render: _self => {
+    initialState: _glEnv => {
+      x: float_of_int(x),
+      y: float_of_int(y)
+    },
+    reducer: (_action: unit, state) => state,
+    willReceiveProps: self => {
+      x: self.state.x +. 1.,
+      y: self.state.y +. 1.
+    },
+    render: self => {
       <rect
-        x={float_of_int(x)}
-        y={float_of_int(y)}
+        x={self.state.x}
+        y={self.state.y}
         width={50.}
         height={50.}
-        fill={Constants.green}
+        fill={Constants.blue}
       />
     }
   };

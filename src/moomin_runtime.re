@@ -7,7 +7,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
     switch (recNode) {
     | R_CHILD(path, element, recNode) => {
       unmount(recNode);
-      element.unmount(~path);
+      element.willUnmount(~path);
     }
     | R_CHILDREN(recNodes) =>
       StateMap.forEach(recNodes, (_key, recNode) => unmount(recNode))
@@ -30,7 +30,10 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       let path = path ++ ":" ++ getElementKey(element, index);
 
       let childRec = switch (prevRec) {
-      | R_CHILD(x, _, childRec) when x === path => childRec
+      | R_CHILD(x, _, childRec) when x === path => {
+        element.willReceiveProps(~path, ~glEnv);
+        childRec
+      }
       | _ => {
         unmount(prevRec);
         element.initialState(~path, ~glEnv);
@@ -38,8 +41,10 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       }
       };
 
+      element.willRender(~path, ~glEnv);
       let child = element.render(~path, ~glEnv);
       let recNode = traverse(~path, ~prevRec=childRec, glEnv, child);
+      element.didRender(~path, ~glEnv);
 
       Reprocessing.Draw.popStyle(glEnv);
       Reprocessing.Draw.popMatrix(glEnv);
