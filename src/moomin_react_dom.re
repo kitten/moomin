@@ -6,6 +6,7 @@ exception UnknownElementTag;
 type elementPropsT = {
   body: option(string),
   font: option(Reprocessing.fontT),
+  image: option(Reprocessing.imageT),
   fill: option(Reprocessing.colorT),
   stroke: option(Reprocessing.colorT),
   strokeWidth: option(int),
@@ -28,8 +29,8 @@ type elementPropsT = {
   rx: float,
   ry: float,
   r: float,
-  width: float,
-  height: float
+  width: option(float),
+  height: option(float)
 };
 
 let applyStyles = (props, glEnv) => {
@@ -82,14 +83,36 @@ let drawGroup = (props, glEnv) => {
   applyTransforms(props, glEnv);
 };
 
-let drawRect = (props, glEnv) => {
+let optionalFloatToInt = (x: option(float)) =>
+  switch (x) {
+  | Some(x) => Some(int_of_float(x))
+  | None => None
+  };
+
+let drawImage = (props, glEnv) =>
+  switch (props.image) {
+  | Some(image) => {
+    applyStyles(props, glEnv);
+    applyTransforms(props, glEnv);
+    Reprocessing.Draw.image(
+      image,
+      ~pos=(0, 0),
+      ~width=?optionalFloatToInt(props.width),
+      ~height=?optionalFloatToInt(props.height),
+      glEnv
+    );
+  }
+  | None => ()
+  };
+
+let drawRect = (props, ~width=0., ~height=0., glEnv) => {
   applyStyles(props, glEnv);
   applyTransforms(props, glEnv);
 
   Reprocessing.Draw.rectf(
     ~pos=(0., 0.),
-    ~width=props.width,
-    ~height=props.height,
+    ~width,
+    ~height,
     glEnv
   );
 };
@@ -142,15 +165,15 @@ let drawText = (props, glEnv) => {
 
 module ReactDOMRe = {
   let props = (
-    ~body=?, ~font=?, ~fill=?, ~stroke=?,
+    ~body=?, ~font=?, ~image=?, ~fill=?, ~stroke=?,
     ~strokeWidth=?, ~strokeLinecap=?,
     ~rotate=?, ~scaleX=?, ~scaleY=?, ~shearX=?, ~shearY=?,
     ~x1=0., ~y1=0., ~x2=0., ~y2=0., ~x3=0., ~y3=0.,
     ~cx=0., ~cy=0., ~rx=0., ~ry=0., ~x=0., ~y=0.,
-    ~r=0., ~width=0., ~height=0.,
+    ~r=0., ~width=?, ~height=?,
     ()
   ): elementPropsT => {
-    body, font, fill, stroke, strokeWidth,
+    body, font, image, fill, stroke, strokeWidth,
     strokeLinecap, rotate, scaleX, scaleY,
     shearX, shearY, cx, cy, rx, ry, r,
     x1, y1, x2, y2, x3, y3, x, y, width, height
@@ -164,7 +187,11 @@ module ReactDOMRe = {
     render: (~path as _path, ~glEnv) =>
       switch (tag) {
       | "rect" => {
-        drawRect(props, glEnv);
+        drawRect(props, ~width=?props.width, ~height=?props.height, glEnv);
+        C_NULL
+      }
+      | "image" => {
+        drawImage(props, glEnv);
         C_NULL
       }
       | "line" => {

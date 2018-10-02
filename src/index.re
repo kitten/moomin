@@ -22,7 +22,7 @@ module Test = {
 
   let make = (_children) => {
     ...component,
-    render: ({ glEnv }) => {
+    render: _self => {
       <>
         <text body="Hello world!" />
 
