@@ -1,19 +1,25 @@
 {
   "name": "moomin",
-  "sources": "src",
+  "version": "0.1.0",
+  "bsc-flags": ["-bs-super-errors", "-bs-no-version-header"],
   "bs-dependencies": [
     "reprocessing"
   ],
   "entries": [{
+    "backend": "js",
+    "module": "commonjs",
+    "main-module": "Index"
+  },{
     "backend": "bytecode",
     "main-module": "IndexHot"
   },{
     "backend": "native",
     "main-module": "Index"
-  },{
-    "backend": "js",
-    "main-module": "Index"
   }],
+  "sources": [
+    "src"
+  ],
+  "namespace": false,
   "refmt": 3,
   "reason": {
     "react-jsx": 2

@@ -23,22 +23,35 @@ module Test = {
   let make = (_children) => {
     ...component,
     render: ({ glEnv }) => {
-      Draw.background(Constants.black, glEnv);
+      <>
+        <text body="Hello world!" />
 
-      <g x={10.}>
-        <TestB x={10} y={10} />
-        <TestB x={10} y={70} />
+        <g fill={Constants.red}>
 
-        <rect
-          x={70.}
-          y={10.}
-          width={50.}
-          height={50.}
-          fill={Constants.blue}
-          stroke={Constants.red}
-          strokeWidth={2}
-        />
-      </g>
+          <g x={10.} rotate={0.1}>
+            <TestB x={10} y={10} />
+            <TestB x={10} y={70} />
+          </g>
+
+          <line
+            x1={150.} y1={0.}
+            x2={100.} y2={500.}
+            stroke={Constants.blue}
+          />
+
+          <ellipse
+            cx={100.} cy={100.}
+            rx={25.} ry={30.}
+          />
+
+          <circle
+            cx={100.} cy={160.}
+            r={20.}
+          />
+
+          <rect shearX={2.} width={50.} height={50.} y={100.} />
+        </g>
+      </>
     }
   };
 };

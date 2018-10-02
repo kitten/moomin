@@ -25,6 +25,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
     switch (children) {
     | C_SINGLE(element) => {
       Reprocessing.Draw.pushStyle(glEnv);
+      Reprocessing.Draw.pushMatrix(glEnv);
 
       let path = path ++ ":" ++ getElementKey(element, index);
 
@@ -41,6 +42,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       let recNode = traverse(~path, ~prevRec=childRec, glEnv, child);
 
       Reprocessing.Draw.popStyle(glEnv);
+      Reprocessing.Draw.popMatrix(glEnv);
 
       R_CHILD(path, element, recNode)
     }
@@ -73,8 +75,12 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       Reprocessing.Env.size(~width=200, ~height=200, glEnv);
       Reprocessing.Draw.fill(Moomin_colors.transparent, glEnv);
       Reprocessing.Draw.stroke(Moomin_colors.transparent, glEnv);
+      Reprocessing.Draw.background(Moomin_colors.white, glEnv);
       R_NULL
     },
-    draw: (state, glEnv) => traverse(~prevRec=state, glEnv, C_SINGLE(root))
+    draw: (state, glEnv) => {
+      Reprocessing.Draw.background(Moomin_colors.white, glEnv);
+      traverse(~prevRec=state, glEnv, C_SINGLE(root))
+    }
   }
 };
