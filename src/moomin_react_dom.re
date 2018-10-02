@@ -222,4 +222,6 @@ module ReactDOMRe = {
       | _ => raise(UnknownElementTag)
       }
   };
+
+  let createElementVariadic = createElement;
 };
