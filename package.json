@@ -1,18 +1,29 @@
 {
   "name": "moomin",
+  "version": "0.1.0",
+  "author": "Phil Pluckthun <phil@kitten.sh>",
+  "repository": "https://github.com/kitten/moomin",
+  "homepage": "https://github.com/kitten/moomin",
+  "bugs": "https://github.com/kitten/moomin/issues",
+  "license": "MIT",
+  "files": [
+    "src",
+    "lib/es6",
+    "lib/js",
+    "bsconfig.json"
+  ],
   "scripts": {
-    "start": "./lib/bs/bytecode/indexhot.byte",
-    "start:native": "./lib/bs/native/index.native",
+    "clean": "bsb -clean-world",
     "build": "bsb -make-world",
-    "build:web": "bsb -make-world -backend js",
-    "build:native": "bsb -make-world -backend native",
-    "clean": "bsb -clean-world"
+    "watch": "bsb -make-world -w",
+    "prepublishOnly": "run-s build"
   },
   "dependencies": {
     "reprocessing": "0.2.0",
     "wonka": "0.1.0-5"
   },
   "devDependencies": {
-    "bsb-native": "4.0.6"
+    "bsb-native": "4.0.6",
+    "npm-run-all": "^4.1.2"
   }
 }

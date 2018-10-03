@@ -6,16 +6,12 @@
     "wonka",
     "reprocessing"
   ],
-  "entries": [{
-    "backend": "js",
+  "package-specs": [{
     "module": "commonjs",
-    "main-module": "Index"
-  },{
-    "backend": "bytecode",
-    "main-module": "IndexHot"
-  },{
-    "backend": "native",
-    "main-module": "Index"
+    "in-source": false
+  }, {
+    "module": "es6",
+    "in-source": false
   }],
   "sources": [
     "src"
