@@ -1,6 +1,6 @@
 {
   "name": "moomin",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "author": "Phil Pluckthun <phil@kitten.sh>",
   "repository": "https://github.com/kitten/moomin",
   "homepage": "https://github.com/kitten/moomin",
@@ -19,7 +19,7 @@
     "prepublishOnly": "run-s build"
   },
   "dependencies": {
-    "reprocessing": "0.2.0",
+    "Reasongl": "github:bsansouci/reasongl",
     "wonka": "0.1.0-5"
   },
   "devDependencies": {

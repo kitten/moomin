@@ -1,11 +1,10 @@
 open Moomin_react_types;
 
-module Utils = Reprocessing_Utils;
-module Constants = Reprocessing_Constants;
-module Draw = Reprocessing_Draw;
-module Env = Reprocessing_Env;
-module Common = Reprocessing_Common;
-module Events = Reprocessing_Events;
+module Utils = Reprocessing.Utils;
+module Constants = Reprocessing.Constants;
+module Draw = Reprocessing.Draw;
+module Env = Reprocessing.Env;
+module Events = Reprocessing.Events;
 
 module Std = Moomin_std;
 module Runtime = Moomin_runtime;

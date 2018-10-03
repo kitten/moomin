@@ -1,10 +1,10 @@
 {
   "name": "moomin",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "bsc-flags": ["-bs-super-errors", "-bs-no-version-header"],
   "bs-dependencies": [
     "wonka",
-    "reprocessing"
+    "Reasongl"
   ],
   "package-specs": [{
     "module": "commonjs",
@@ -13,9 +13,16 @@
     "module": "es6",
     "in-source": false
   }],
-  "sources": [
-    "src"
-  ],
+  "sources": [{
+    "dir": "src",
+    "subdirs": [{
+      "dir": "reprocessing",
+      "subdirs": [{
+        "dir": "bytecode",
+        "backend": ["bytecode"]
+      }]
+    }]
+  }],
   "namespace": false,
   "refmt": 3,
   "reason": {
