@@ -28,7 +28,41 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
     }
   };
 
-  let rec traverse = (
+  let rec renderChild = (
+    ~prevRec=R_NULL,
+    ~path: string,
+    glEnv: Reprocessing.glEnvT,
+    element: elementT
+  ) => {
+    Reprocessing.Draw.pushStyle(glEnv);
+    Reprocessing.Draw.pushMatrix(glEnv);
+
+    let (isMounting, childRec) = switch (prevRec) {
+    | R_CHILD(x, _, childRec) when x === path => {
+      element.willUpdate(~path, ~glEnv);
+      (false, childRec)
+    }
+    | _ => {
+      unmount(~glEnv, prevRec);
+      element.initialState(~path, ~glEnv);
+      (true, R_NULL)
+    }
+    };
+
+    let child = element.render(~path, ~glEnv);
+    let recNode = renderTree(~path, ~prevRec=childRec, glEnv, child);
+
+    if (isMounting) {
+      element.didMount(~path, ~glEnv);
+    } else {
+      element.didUpdate(~path, ~glEnv);
+    };
+
+    Reprocessing.Draw.popStyle(glEnv);
+    Reprocessing.Draw.popMatrix(glEnv);
+
+    R_CHILD(path, element, recNode)
+  } and renderTree = (
     ~path="root",
     ~index=0,
     ~prevRec=R_NULL,
@@ -37,36 +71,8 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
   ) => {
     switch (children) {
     | C_SINGLE(element) => {
-      Reprocessing.Draw.pushStyle(glEnv);
-      Reprocessing.Draw.pushMatrix(glEnv);
-
       let path = path ++ ":" ++ getElementKey(element, index);
-
-      let (isMounting, childRec) = switch (prevRec) {
-      | R_CHILD(x, _, childRec) when x === path => {
-        element.willUpdate(~path, ~glEnv);
-        (false, childRec)
-      }
-      | _ => {
-        unmount(~glEnv, prevRec);
-        element.initialState(~path, ~glEnv);
-        (true, R_NULL)
-      }
-      };
-
-      let child = element.render(~path, ~glEnv);
-      let recNode = traverse(~path, ~prevRec=childRec, glEnv, child);
-
-      if (isMounting) {
-        element.didMount(~path, ~glEnv);
-      } else {
-        element.didUpdate(~path, ~glEnv);
-      };
-
-      Reprocessing.Draw.popStyle(glEnv);
-      Reprocessing.Draw.popMatrix(glEnv);
-
-      R_CHILD(path, element, recNode)
+      renderChild(~prevRec, ~path, glEnv, element)
     }
     | C_MANY(elements) => {
       let recMap = StateMap.make();
@@ -81,7 +87,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       Array.iteri((i, element) => {
         let path = path ++ ":" ++ getElementKey(element, i);
         let prevRec = getPop(prevRecMap, path, R_NULL);
-        let recNode = traverse(~path, ~prevRec, ~index=i, glEnv, C_SINGLE(element));
+        let recNode = renderChild(~prevRec, ~path, glEnv, element);
         StateMap.set(recMap, path, recNode);
       }, elements);
 
@@ -96,10 +102,10 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
     setup: glEnv => {
       Reprocessing.Draw.fill(Moomin_colors.transparent, glEnv);
       Reprocessing.Draw.stroke(Moomin_colors.transparent, glEnv);
-      traverse(glEnv, C_SINGLE(root))
+      renderTree(glEnv, C_SINGLE(root))
     },
     draw: (state, glEnv) => {
-      traverse(~prevRec=state, glEnv, C_SINGLE(root))
+      renderTree(~prevRec=state, glEnv, C_SINGLE(root))
     }
   }
 };
