@@ -1,4 +1,5 @@
 open Moomin_react_types;
+open Moomin_react_helpers;
 
 let makeSelf = (
   ~glEnv: Reprocessing.glEnvT,
@@ -11,9 +12,13 @@ let makeSelf = (
 };
 
 let makeInternal = (name: string): internalT('state, 'action) => {
-  name,
-  states: StateMap.make(),
-  actions: StateMap.make()
+  ComponentNames.checkName(name);
+
+  {
+    name,
+    states: StateMap.make(),
+    actions: StateMap.make()
+  }
 };
 
 let getElementKey = (element: elementT, index: int) =>
@@ -21,22 +26,6 @@ let getElementKey = (element: elementT, index: int) =>
   | Some(x) => x
   | None => string_of_int(index)
   } ++ ")";
-
-let getPop = (map: stateMapT('a), key: string, default: 'a) =>
-  switch (StateMap.get(map, key)) {
-  | Some(res) => {
-    StateMap.remove(map, key);
-    res
-  }
-  | None => default
-  };
-
-let rec updateState = (reducer, actions, state) =>
-  switch (Belt.MutableQueue.pop(actions)) {
-  | Some(action) =>
-    updateState(reducer, actions, reducer(action, state))
-  | None => state
-  };
 
 module ReasonReact = {
   let null: elementT = {

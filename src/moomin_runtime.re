@@ -6,6 +6,15 @@ type reprocessingLoopT('state) = {
   draw: ('state, Reprocessing.glEnvT) => 'state
 };
 
+let getPop = (map: stateMapT('a), key: string, default: 'a) =>
+  switch (StateMap.get(map, key)) {
+  | Some(res) => {
+    StateMap.remove(map, key);
+    res
+  }
+  | None => default
+  };
+
 let render = (root: elementT): reprocessingLoopT(recNodeT) => {
   let rec unmount = (recNode: recNodeT) => {
     switch (recNode) {

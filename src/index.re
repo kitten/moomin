@@ -5,7 +5,7 @@ module Square = {
     rotate: float
   };
 
-  let component = ReasonReact.reducerComponent("TestC");
+  let component = ReasonReact.reducerComponent("Square");
 
   let make = (_children) => {
     ...component,
