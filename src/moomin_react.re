@@ -33,10 +33,10 @@ module ReasonReact = {
     key: None,
     stateless: true,
     initialState: (~path as _path, ~glEnv as _glEnv) => (),
-    willReceiveProps: (~path as _path, ~glEnv as _glEnv) => (),
-    willRender: (~path as _path, ~glEnv as _glEnv) => (),
+    willUpdate: (~path as _path, ~glEnv as _glEnv) => (),
     render: (~path as _path, ~glEnv as _glEnv) => C_NULL,
-    didRender: (~path as _path, ~glEnv as _glEnv) => (),
+    didMount: (~path as _path, ~glEnv as _glEnv) => (),
+    didUpdate: (~path as _path, ~glEnv as _glEnv) => (),
     willUnmount: (~path as _path, ~glEnv as _glEnv) => ()
   };
 
@@ -51,6 +51,14 @@ module ReasonReact = {
       makeSelf(~glEnv, ~state, ~actions)
     };
 
+    let flushActions = (~path, ~glEnv) => {
+      let actions = StateMap.getExn(actions, path);
+      let state = StateMap.getExn(states, path)
+        |> updateState(component.reducer, actions);
+      StateMap.set(states, path, state);
+      makeSelf(~glEnv, ~state, ~actions);
+    };
+
     {
       name,
       key,
@@ -60,27 +68,23 @@ module ReasonReact = {
         StateMap.set(states, path, state);
         StateMap.set(actions, path, Belt.MutableQueue.make());
       },
-      willReceiveProps: (~path, ~glEnv) => {
+      willUpdate: (~path, ~glEnv) => {
         let self = makeSelfElement(~path, ~glEnv);
-        let state = component.willReceiveProps(self);
+        let state = component.willUpdate(self);
         StateMap.set(states, path, state);
-      },
-      willRender: (~path, ~glEnv) => {
-        let state = StateMap.getExn(states, path);
-        let actions = StateMap.getExn(actions, path);
-        let state = updateState(component.reducer, actions, state);
-        StateMap.set(states, path, state);
-        let self = makeSelf(~glEnv, ~state, ~actions);
-        component.willRender(self);
       },
       render: (~path, ~glEnv): childrenT => {
-        let self = makeSelfElement(~path, ~glEnv);
+        let self = flushActions(~path, ~glEnv);
         let element = component.render(self);
         C_SINGLE(element)
       },
-      didRender: (~path, ~glEnv) => {
+      didMount: (~path, ~glEnv) => {
         let self = makeSelfElement(~path, ~glEnv);
-        component.didRender(self);
+        component.didMount(self);
+      },
+      didUpdate: (~path, ~glEnv) => {
+        let self = makeSelfElement(~path, ~glEnv);
+        component.didUpdate(self);
       },
       willUnmount: (~path, ~glEnv) => {
         let self = makeSelfElement(~path, ~glEnv);
@@ -96,10 +100,10 @@ module ReasonReact = {
   let statelessComponent = (componentName: string): componentSpecT(unit, unit, unit) => {
     internal: makeInternal(componentName),
     initialState: (_glEnv: Reprocessing.glEnvT): 'initState => (),
-    willReceiveProps: (self: selfT('state, 'action)): 'state => self.state,
-    willRender: (_self: selfT('state, 'action)) => (),
+    willUpdate: (self: selfT('state, 'action)): 'state => self.state,
     render: (_self: selfT('state, 'action)) => null,
-    didRender: (_self: selfT('state, 'action)) => (),
+    didMount: (_self: selfT('state, 'action)) => (),
+    didUpdate: (_self: selfT('state, 'action)) => (),
     willUnmount: (_self: selfT('state, 'action)) => (),
     reducer: (_action: 'action, state: 'state): 'state => state
   };
@@ -107,10 +111,10 @@ module ReasonReact = {
   let reducerComponent = (componentName: string): componentSpecT('state, 'action, 'initState) => {
     internal: makeInternal(componentName),
     initialState: (_glEnv: Reprocessing.glEnvT): 'initState => (),
-    willReceiveProps: (self: selfT('state, 'action)): 'state => self.state,
-    willRender: (_self: selfT('state, 'action)) => (),
+    willUpdate: (self: selfT('state, 'action)): 'state => self.state,
     render: (_self: selfT('state, 'action)) => null,
-    didRender: (_self: selfT('state, 'action)) => (),
+    didMount: (_self: selfT('state, 'action)) => (),
+    didUpdate: (_self: selfT('state, 'action)) => (),
     willUnmount: (_self: selfT('state, 'action)) => (),
     reducer: (_action: 'action, state: 'state): 'state => state
   };

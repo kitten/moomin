@@ -22,20 +22,20 @@ and elementT = {
   key: option(string),
   stateless: bool,
   initialState: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
-  willReceiveProps: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
-  willRender: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
+  willUpdate: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
   render: (~path: string, ~glEnv: Reprocessing.glEnvT) => childrenT,
-  didRender: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
+  didMount: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
+  didUpdate: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
   willUnmount: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit
 };
 
 type componentSpecT('state, 'action, 'initState) = {
   internal: internalT('state, 'action),
   initialState: Reprocessing.glEnvT => 'initState,
-  willReceiveProps: selfT('state, 'action) => 'state,
-  willRender: selfT('state, 'action) => unit,
+  willUpdate: selfT('state, 'action) => 'state,
   render: selfT('state, 'action) => elementT,
-  didRender: selfT('state, 'action) => unit,
+  didMount: selfT('state, 'action) => unit,
+  didUpdate: selfT('state, 'action) => unit,
   willUnmount: selfT('state, 'action) => unit,
   reducer: ('action, 'state) => 'state
 };

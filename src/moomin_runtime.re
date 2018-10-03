@@ -42,22 +42,26 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
 
       let path = path ++ ":" ++ getElementKey(element, index);
 
-      let childRec = switch (prevRec) {
+      let (isMounting, childRec) = switch (prevRec) {
       | R_CHILD(x, _, childRec) when x === path => {
-        element.willReceiveProps(~path, ~glEnv);
-        childRec
+        element.willUpdate(~path, ~glEnv);
+        (false, childRec)
       }
       | _ => {
         unmount(~glEnv, prevRec);
         element.initialState(~path, ~glEnv);
-        R_NULL
+        (true, R_NULL)
       }
       };
 
-      element.willRender(~path, ~glEnv);
       let child = element.render(~path, ~glEnv);
       let recNode = traverse(~path, ~prevRec=childRec, glEnv, child);
-      element.didRender(~path, ~glEnv);
+
+      if (isMounting) {
+        element.didMount(~path, ~glEnv);
+      } else {
+        element.didUpdate(~path, ~glEnv);
+      };
 
       Reprocessing.Draw.popStyle(glEnv);
       Reprocessing.Draw.popMatrix(glEnv);

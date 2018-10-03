@@ -11,7 +11,7 @@ module Square = {
     ...component,
     initialState: _glEnv => { rotate: 0. },
     reducer: (_action: unit, state) => state,
-    willReceiveProps: self => { rotate: self.state.rotate +. 0.1 },
+    willUpdate: self => { rotate: self.state.rotate +. 0.1 },
     render: self => {
       <rect
         x={5.}
@@ -63,7 +63,7 @@ module TestB = {
       move: (magnitude, magnitude)
     },
     reducer: (_action: unit, state) => state,
-    willReceiveProps: self => {
+    willUpdate: self => {
       let move = if (self.state.x >= 50. || self.state.x <= 0.) {
         let (moveX, moveY) = self.state.move;
         (moveX *. -1., moveY *. -1.)
