@@ -20,12 +20,13 @@ type childrenT =
 and elementT = {
   name: string,
   key: option(string),
+  stateless: bool,
   initialState: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
   willReceiveProps: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
   willRender: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
   render: (~path: string, ~glEnv: Reprocessing.glEnvT) => childrenT,
   didRender: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit,
-  willUnmount: (~path: string) => unit
+  willUnmount: (~path: string, ~glEnv: Reprocessing.glEnvT) => unit
 };
 
 type componentSpecT('state, 'action, 'initState) = {
@@ -35,6 +36,7 @@ type componentSpecT('state, 'action, 'initState) = {
   willRender: selfT('state, 'action) => unit,
   render: selfT('state, 'action) => elementT,
   didRender: selfT('state, 'action) => unit,
+  willUnmount: selfT('state, 'action) => unit,
   reducer: ('action, 'state) => 'state
 };
 

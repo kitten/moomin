@@ -163,6 +163,18 @@ let drawText = (props, glEnv) => {
   };
 };
 
+let isStateless = (tag: string) =>
+  switch (tag) {
+    | "rect"
+    | "image"
+    | "line"
+    | "triangle"
+    | "ellipse"
+    | "circle"
+    | "text" => true
+    | _ => false
+  };
+
 module ReactDOMRe = {
   let props = (
     ~body=?, ~font=?, ~image=?, ~fill=?, ~stroke=?,
@@ -184,6 +196,7 @@ module ReactDOMRe = {
   let createElement = (tag: string, ~props=defaultProps, children: array(elementT)) => {
     ...ReasonReact.null,
     name: tag,
+    stateless: isStateless(tag),
     render: (~path as _path, ~glEnv) =>
       switch (tag) {
       | "rect" => {

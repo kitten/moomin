@@ -16,14 +16,14 @@ let getPop = (map: stateMapT('a), key: string, default: 'a) =>
   };
 
 let render = (root: elementT): reprocessingLoopT(recNodeT) => {
-  let rec unmount = (recNode: recNodeT) => {
+  let rec unmount = (~glEnv: Reprocessing.glEnvT, recNode: recNodeT) => {
     switch (recNode) {
     | R_CHILD(path, element, recNode) => {
-      unmount(recNode);
-      element.willUnmount(~path);
+      unmount(~glEnv, recNode);
+      element.willUnmount(~path, ~glEnv);
     }
     | R_CHILDREN(recNodes) =>
-      StateMap.forEach(recNodes, (_key, recNode) => unmount(recNode))
+      StateMap.forEach(recNodes, (_key, recNode) => unmount(~glEnv, recNode))
     | R_NULL => ()
     }
   };
@@ -48,7 +48,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
         childRec
       }
       | _ => {
-        unmount(prevRec);
+        unmount(~glEnv, prevRec);
         element.initialState(~path, ~glEnv);
         R_NULL
       }
@@ -69,7 +69,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       let prevRecMap = switch (prevRec) {
       | R_CHILDREN(recMap) => recMap
       | _ => {
-        unmount(prevRec);
+        unmount(~glEnv, prevRec);
         StateMap.make()
       }
       };
@@ -81,7 +81,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
         StateMap.set(recMap, path, recNode);
       }, elements);
 
-      unmount(prevRec);
+      unmount(~glEnv, prevRec);
       R_CHILDREN(recMap)
     }
     | C_NULL => R_NULL
@@ -90,14 +90,11 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
 
   {
     setup: glEnv => {
-      Reprocessing.Env.size(~width=200, ~height=200, glEnv);
       Reprocessing.Draw.fill(Moomin_colors.transparent, glEnv);
       Reprocessing.Draw.stroke(Moomin_colors.transparent, glEnv);
-      Reprocessing.Draw.background(Moomin_colors.white, glEnv);
       traverse(glEnv, C_SINGLE(root))
     },
     draw: (state, glEnv) => {
-      Reprocessing.Draw.background(Moomin_colors.white, glEnv);
       traverse(~prevRec=state, glEnv, C_SINGLE(root))
     }
   }

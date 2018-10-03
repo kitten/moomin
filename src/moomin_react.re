@@ -31,12 +31,13 @@ module ReasonReact = {
   let null: elementT = {
     name: "null",
     key: None,
+    stateless: true,
     initialState: (~path as _path, ~glEnv as _glEnv) => (),
     willReceiveProps: (~path as _path, ~glEnv as _glEnv) => (),
     willRender: (~path as _path, ~glEnv as _glEnv) => (),
     render: (~path as _path, ~glEnv as _glEnv) => C_NULL,
     didRender: (~path as _path, ~glEnv as _glEnv) => (),
-    willUnmount: (~path as _path) => ()
+    willUnmount: (~path as _path, ~glEnv as _glEnv) => ()
   };
 
   let element = (~key=?, component): elementT => {
@@ -44,18 +45,23 @@ module ReasonReact = {
     let states = component.internal.states;
     let actions = component.internal.actions;
 
+    let makeSelfElement = (~path, ~glEnv) => {
+      let state = StateMap.getExn(states, path);
+      let actions = StateMap.getExn(actions, path);
+      makeSelf(~glEnv, ~state, ~actions)
+    };
+
     {
       name,
       key,
+      stateless: false,
       initialState: (~path, ~glEnv) => {
         let state = component.initialState(glEnv);
         StateMap.set(states, path, state);
         StateMap.set(actions, path, Belt.MutableQueue.make());
       },
       willReceiveProps: (~path, ~glEnv) => {
-        let state = StateMap.getExn(states, path);
-        let actions = StateMap.getExn(actions, path);
-        let self = makeSelf(~glEnv, ~state, ~actions);
+        let self = makeSelfElement(~path, ~glEnv);
         let state = component.willReceiveProps(self);
         StateMap.set(states, path, state);
       },
@@ -68,19 +74,17 @@ module ReasonReact = {
         component.willRender(self);
       },
       render: (~path, ~glEnv): childrenT => {
-        let state = StateMap.getExn(states, path);
-        let actions = StateMap.getExn(actions, path);
-        let self = makeSelf(~glEnv, ~state, ~actions);
+        let self = makeSelfElement(~path, ~glEnv);
         let element = component.render(self);
         C_SINGLE(element)
       },
       didRender: (~path, ~glEnv) => {
-        let state = StateMap.getExn(states, path);
-        let actions = StateMap.getExn(actions, path);
-        let self = makeSelf(~glEnv, ~state, ~actions);
+        let self = makeSelfElement(~path, ~glEnv);
         component.didRender(self);
       },
-      willUnmount: (~path) => {
+      willUnmount: (~path, ~glEnv) => {
+        let self = makeSelfElement(~path, ~glEnv);
+        component.willUnmount(self);
         StateMap.remove(states, path);
         StateMap.remove(actions, path);
       }
@@ -96,6 +100,7 @@ module ReasonReact = {
     willRender: (_self: selfT('state, 'action)) => (),
     render: (_self: selfT('state, 'action)) => null,
     didRender: (_self: selfT('state, 'action)) => (),
+    willUnmount: (_self: selfT('state, 'action)) => (),
     reducer: (_action: 'action, state: 'state): 'state => state
   };
 
@@ -106,6 +111,7 @@ module ReasonReact = {
     willRender: (_self: selfT('state, 'action)) => (),
     render: (_self: selfT('state, 'action)) => null,
     didRender: (_self: selfT('state, 'action)) => (),
+    willUnmount: (_self: selfT('state, 'action)) => (),
     reducer: (_action: 'action, state: 'state): 'state => state
   };
 };
