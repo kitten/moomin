@@ -46,3 +46,8 @@ type recNodeT =
   | R_NULL
   | R_CHILD(string, elementT, recNodeT)
   | R_CHILDREN(stateMapT(recNodeT));
+
+type reprocessingLoopT('state) = {
+  setup: Reprocessing.glEnvT => 'state,
+  draw: ('state, Reprocessing.glEnvT) => 'state
+};

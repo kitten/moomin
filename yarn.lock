@@ -62,10 +62,10 @@ sdl2@bsansouci/SDL-mirror#fast:
   dependencies:
     yauzl "^2.9.1"
 
-wonka@0.1.0-3:
-  version "0.1.0-3"
-  resolved "https://registry.npmjs.org/wonka/-/wonka-0.1.0-3.tgz#5050a905ab825173557295b3c9f01f8571e2dc7a"
-  integrity sha512-WTDEc8XlaTQKOp3GPEyGHkqpa9kSVHbc2sSYSvSznnbTKCk+ofeX94Wz/GQzSwBBQuTCAJNAmPBHR9RhjcAGrQ==
+wonka@0.1.0-5:
+  version "0.1.0-5"
+  resolved "https://registry.npmjs.org/wonka/-/wonka-0.1.0-5.tgz#ad118e6098c5cc139822da42c880ef5b65ba7290"
+  integrity sha512-Z84oTJS1h6++fyEdQwNmdZPzDb+GP9QwzG7wAEtuu+rPnzg0WAO+g/AfbPerOiNeu1OEmiDrSUgw4g2MfdwJPw==
 
 yauzl@^2.9.1:
   version "2.10.0"

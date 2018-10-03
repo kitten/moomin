@@ -1,11 +1,6 @@
 open Moomin_react_types;
 open Moomin_react;
 
-type reprocessingLoopT('state) = {
-  setup: Reprocessing.glEnvT => 'state,
-  draw: ('state, Reprocessing.glEnvT) => 'state
-};
-
 let getPop = (map: stateMapT('a), key: string, default: 'a) =>
   switch (StateMap.get(map, key)) {
   | Some(res) => {

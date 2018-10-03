@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "reprocessing": "0.2.0",
-    "wonka": "0.1.0-3"
+    "wonka": "0.1.0-5"
   },
   "devDependencies": {
     "bsb-native": "4.0.6"
