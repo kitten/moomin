@@ -127,8 +127,10 @@ module Test = {
 };
 
 run(
-  <Test>
-    <TestB x={10} y={10} />
-    <TestB x={10} y={70} magnitude={1.5} />
-  </Test>
+  <Std.Setup width={800} height={600} background={Colors.white}>
+    <Test>
+      <TestB x={10} y={10} />
+      <TestB x={10} y={70} magnitude={1.5} />
+    </Test>
+  </Std.Setup>
 );

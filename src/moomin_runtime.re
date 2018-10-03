@@ -85,7 +85,7 @@ let render = (root: elementT): reprocessingLoopT(recNodeT) => {
       Reprocessing.Draw.fill(Moomin_colors.transparent, glEnv);
       Reprocessing.Draw.stroke(Moomin_colors.transparent, glEnv);
       Reprocessing.Draw.background(Moomin_colors.white, glEnv);
-      R_NULL
+      traverse(glEnv, C_SINGLE(root))
     },
     draw: (state, glEnv) => {
       Reprocessing.Draw.background(Moomin_colors.white, glEnv);

@@ -7,6 +7,7 @@ module Env = Reprocessing_Env;
 module Common = Reprocessing_Common;
 module Events = Reprocessing_Events;
 
+module Std = Moomin_std;
 module Runtime = Moomin_runtime;
 module Colors = Moomin_colors;
 module ReasonReact = Moomin_react.ReasonReact;
