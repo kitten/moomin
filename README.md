@@ -40,7 +40,6 @@ lifecycle rules of React apply and ReasonReact's API is adopted vaguely, but not
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -57,7 +56,6 @@ lifecycle rules of React apply and ReasonReact's API is adopted vaguely, but not
   - [Elements](#elements)
     - [`<g>`](#g)
     - [`<rect>`](#rect)
-    - [`<rect>`](#rect-1)
     - [`<line>`](#line)
     - [`<triangle>`](#triangle)
     - [`<ellipse>`](#ellipse)
@@ -305,15 +303,6 @@ on its own. It also accepts any number of children, while all other elements don
 accept any children.
 
 If you don't need to pass any prop to `<g>` you can also just use a fragment (`<>`).
-
-#### `<rect>`
-
-Draws a rectangle.
-
-| Prop     | Type    | Description            |
-| -------- | ------- | ---------------------- |
-| `width`  | `float` | The rectangle's width  |
-| `height` | `float` | The rectangle's height |
 
 #### `<rect>`
 
