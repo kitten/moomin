@@ -12,6 +12,8 @@ allowing games to be written with components and JSX.
 
 <center><img alt="Moomin" src="/docs/moomin.jpg?raw=true" width="300px" /></center>
 
+**[Check out CodeSandbox for a quick example](https://codesandbox.io/s/ypx4855m09)**
+
 ## Why?
 
 [Reprocessing](https://github.com/Schmavery/reprocessing) is an excellent library for writing games
@@ -59,6 +61,7 @@ lifecycle rules of React apply and ReasonReact's API is adopted vaguely, but not
     - [`<line>`](#line)
     - [`<triangle>`](#triangle)
     - [`<ellipse>`](#ellipse)
+    - [`<circle>`](#circle)
     - [`<text>`](#text)
     - [`<image>`](#image)
   - [Component Creation](#component-creation)
@@ -118,6 +121,8 @@ make sure to enable Reason's `react-jsx: 2` mode:
 > - Please make sure not to add ReasonReact as well, as its module names are taken up by Moomin.
 
 ## Usage
+
+A more extensive example can also be found on [Codesandbox](https://codesandbox.io/s/ypx4855m09).
 
 ### Basic Example
 
@@ -247,6 +252,9 @@ not SVG elements at all.
 
 ## Shortcomings / Plans
 
+> Note: This is a section on Moomin only. If you're trying to understand how Reprocessing
+> differs from Processing [read their section on the matter](https://github.com/Schmavery/reprocessing#some-differences-from-processing).
+
 - Complex SVG elements have not been implemented. `<path>` for instance
 - There's no element for tilemaps yet
 - There's no new color utilities for hex colours and more
@@ -315,8 +323,10 @@ Draws a rectangle.
 
 #### `<line>`
 
-Draws a line. The points still stay relevant to the current coordinate system's translation.
-So keep in mind that `x` and `y` will still apply to this element and will move it.
+Draws a line.
+
+> Note: The points still stay relevant to the current coordinate system's translation.
+> So keep in mind that `x` and `y` will still apply to this element and will move it.
 
 | Prop | Type    | Description                        |
 | ---- | ------- | ---------------------------------- |
@@ -327,8 +337,10 @@ So keep in mind that `x` and `y` will still apply to this element and will move 
 
 #### `<triangle>`
 
-Draws a triangle. The points still stay relevant to the current coordinate system's translation.
-So keep in mind that `x` and `y` will still apply to this element and will move it.
+Draws a triangle.
+
+> Note: The points still stay relevant to the current coordinate system's translation.
+> So keep in mind that `x` and `y` will still apply to this element and will move it.
 
 | Prop | Type    | Description                 |
 | ---- | ------- | --------------------------- |
@@ -341,8 +353,10 @@ So keep in mind that `x` and `y` will still apply to this element and will move 
 
 #### `<ellipse>`
 
-Draws an ellipse. The points still stay relevant to the current coordinate system's translation.
-So keep in mind that `x` and `y` will still apply to this element and will move it.
+Draws an ellipse.
+
+> Note: The points still stay relevant to the current coordinate system's translation.
+> So keep in mind that `x` and `y` will still apply to this element and will move it.
 
 | Prop | Type    | Description                         |
 | ---- | ------- | ----------------------------------- |
@@ -351,10 +365,26 @@ So keep in mind that `x` and `y` will still apply to this element and will move 
 | `rx` | `float` | The ellipse's horizontal radius     |
 | `ry` | `float` | The ellipse's vertical radius       |
 
+#### `<circle>`
+
+Draws a circle.
+
+> Note: The points still stay relevant to the current coordinate system's translation.
+> So keep in mind that `x` and `y` will still apply to this element and will move it.
+
+| Prop | Type    | Description                         |
+| ---- | ------- | ----------------------------------- |
+| `cx` | `float` | The circle's center `x` coordinate |
+| `cy` | `float` | The circle's center `y` coordinate |
+| `r` | `float` | The circle's radius     |
+
 #### `<text>`
 
 Draws text. Note that it's not its children that's of type `string`,
 but instead it accepts a prop.
+
+More on how to _load_ fonts in the
+[Reprocessing docs](https://schmavery.github.io/reprocessing/api/Reprocessing_Draw.html#value-loadFont).
 
 | Prop   | Type     | Description                   |
 | ------ | -------- | ----------------------------- |
@@ -365,6 +395,9 @@ but instead it accepts a prop.
 
 Draws an image. Like in Reprocessing itself, if `width` and
 `height` are not passed, then the image's resolution is used.
+
+More on how to _load_ images in the
+[Reprocessing docs](https://schmavery.github.io/reprocessing/api/Reprocessing_Draw.html#value-loadImage).
 
 | Prop     | Type     | Description                            |
 | -------- | -------- | -------------------------------------- |
